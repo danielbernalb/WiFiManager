@@ -1435,8 +1435,8 @@ bool WiFiManager::WiFi_scanNetworks(bool force,bool async){
     if(force || (_lastscan>0 && (millis()-_lastscan > 60000))){
       int8_t res;
       _startscan = millis();
-      //if(async && _asyncScan){
-        if(ESP8266){
+      if(async && _asyncScan){
+//        if(ESP8266){
         #ifdef ESP8266
           #ifndef WM_NOASYNC // no async available < 2.4.0
           #ifdef WM_DEBUG_LEVEL
@@ -1444,11 +1444,11 @@ bool WiFiManager::WiFi_scanNetworks(bool force,bool async){
           #endif
           using namespace std::placeholders; // for `_1`
           WiFi.scanNetworksAsync(std::bind(&WiFiManager::WiFi_scanComplete,this,_1));
-          Serial.println("WM_ASYNC");
+//          Serial.println("WM_ASYNC");
           #else
           DEBUG_WM(DEBUG_VERBOSE,F("WiFi Scan SYNC started"));
           res = WiFi.scanNetworks();
-          Serial.println("WM_NOASYNC");
+//          Serial.println("WM_NOASYNC");
           #endif
         #else
         #ifdef WM_DEBUG_LEVEL
