@@ -1443,9 +1443,11 @@ bool WiFiManager::WiFi_scanNetworks(bool force,bool async){
           #endif
           using namespace std::placeholders; // for `_1`
           WiFi.scanNetworksAsync(std::bind(&WiFiManager::WiFi_scanComplete,this,_1));
+          Serial.println("WM_ASYNC");
           #else
           DEBUG_WM(DEBUG_VERBOSE,F("WiFi Scan SYNC started"));
           res = WiFi.scanNetworks();
+          Serial.println("WM_NOASYNC");
           #endif
         #else
         #ifdef WM_DEBUG_LEVEL
