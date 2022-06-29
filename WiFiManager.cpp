@@ -1543,6 +1543,10 @@ String WiFiManager::WiFiManager::getScanItemOut(){
               #endif
               indices[j] = -1; // set dup aps to index -1
             }
+            if (_minimumQuality == -1 || _minimumQuality < rssiperc)
+              delay(0);
+            else
+              indices[j] = -1; // set dup aps to index -1
           }
         }
       }
