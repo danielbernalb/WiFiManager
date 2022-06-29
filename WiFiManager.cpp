@@ -612,7 +612,7 @@ void WiFiManager::setupHTTPServer(){
   // G macro workaround for Uri() bug https://github.com/esp8266/Arduino/issues/7102
   server->on(WM_G(R_root),       std::bind(&WiFiManager::handleRoot, this));
   server->on(WM_G(R_wifi),       std::bind(&WiFiManager::handleWifi, this, true));
-  server->on(WM_G(R_wifinoscan), std::bind(&WiFiManager::handleWifi, this, false));
+  server->on(WM_G(R_wifinoscan), std::bind(&WiFiManager::handleWifi, this, true));
   server->on(WM_G(R_wifisave),   std::bind(&WiFiManager::handleWifiSave, this));
   server->on(WM_G(R_info),       std::bind(&WiFiManager::handleInfo, this));
   server->on(WM_G(R_param),      std::bind(&WiFiManager::handleParam, this));
@@ -1436,7 +1436,6 @@ bool WiFiManager::WiFi_scanNetworks(bool force,bool async){
       int8_t res;
       _startscan = millis();
       if(async && _asyncScan){
-//        if(ESP8266){
         #ifdef ESP8266
           #ifndef WM_NOASYNC // no async available < 2.4.0
           #ifdef WM_DEBUG_LEVEL
@@ -1444,11 +1443,9 @@ bool WiFiManager::WiFi_scanNetworks(bool force,bool async){
           #endif
           using namespace std::placeholders; // for `_1`
           WiFi.scanNetworksAsync(std::bind(&WiFiManager::WiFi_scanComplete,this,_1));
-//          Serial.println("WM_ASYNC");
           #else
           DEBUG_WM(DEBUG_VERBOSE,F("WiFi Scan SYNC started"));
           res = WiFi.scanNetworks();
-//          Serial.println("WM_NOASYNC");
           #endif
         #else
         #ifdef WM_DEBUG_LEVEL

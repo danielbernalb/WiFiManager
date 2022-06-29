@@ -518,7 +518,7 @@ class WiFiManager
     boolean       _wifiAutoReconnect      = true;  // there is no platform getter for this, we must assume its true and make it so
     boolean       _apClientCheck          = false; // keep cp alive if ap have station
     boolean       _webClientCheck         = true;  // keep cp alive if web have client
-    boolean       _scanDispOptions        = true;  // show percentage in scans not icons
+    boolean       _scanDispOptions        = false; // show percentage in scans not icons
     boolean       _paramsInWifi           = true;  // show custom parameters on wifi page
     boolean       _showInfoErase          = true;  // info page erase button
     boolean       _showInfoUpdate         = true;  // info page update button
