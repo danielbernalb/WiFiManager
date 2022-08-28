@@ -271,17 +271,26 @@ boolean WiFiManager::autoConnect(char const *apName, char const *apPassword) {
   #ifdef WM_DEBUG_LEVEL
   DEBUG_WM(F("AutoConnect"));
   #endif
+
+  #ifdef ESP32
+  setupHostname(true);
+
+  if(_hostname){
+    // disable wifi if already on
+    if(WiFi.getMode() & WIFI_STA){
+      WiFi.mode(WIFI_OFF);
+      int timeout = millis()+1200;
+      // async loop for mode change
+      while(WiFi.getMode()!= WIFI_OFF && millis()<timeout){
+        delay(0);
+      }
+    }
+  }
+  #endif
+
   if(getWiFiIsSaved()){
      _startconn = millis();
     _begin();
-
-    // sethostname before wifi ready
-    // https://github.com/tzapu/WiFiManager/issues/1403
-    #ifdef ESP32
-    if(_hostname != ""){
-      setupHostname(true);
-    }
-    #endif
 
     // attempt to connect using saved settings, on fail fallback to AP config portal
     if(!WiFi.enableSTA(true)){
@@ -332,6 +341,7 @@ boolean WiFiManager::autoConnect(char const *apName, char const *apPassword) {
       DEBUG_WM(DEBUG_VERBOSE,F("Connected in"),(String)((millis()-_startconn)) + " ms");
       DEBUG_WM(F("STA IP Address:"),WiFi.localIP());
       #endif
+      // Serial.println("Connected in " + (String)((millis()-_startconn)) + " ms");
       _lastconxresult = WL_CONNECTED;
 
       if(_hostname != ""){
@@ -396,12 +406,20 @@ bool WiFiManager::setupHostname(bool restart){
   #elif defined(ESP32)
     // @note hostname must be set after STA_START
     // @note, this may have changed at some point, now it wont work, I have to set it before.
-   
+    // same for S2, must set it before mode(STA) now
+  
     #ifdef WM_DEBUG_LEVEL
     DEBUG_WM(DEBUG_VERBOSE,F("Setting WiFi hostname"));
     #endif
 
     res = WiFi.setHostname(_hostname.c_str());
+    // esp_err_t err;
+    //   // err = set_esp_interface_hostname(ESP_IF_WIFI_STA, "TEST_HOSTNAME");
+    //   err = esp_netif_set_hostname(esp_netifs[ESP_IF_WIFI_STA], "TEST_HOSTNAME");
+    //     if(err){
+    //         log_e("Could not set hostname! %d", err);
+    //         return false;
+    //     } 
     // #ifdef ESP32MDNS_H
       #ifdef WM_MDNS
         #ifdef WM_DEBUG_LEVEL
@@ -798,6 +816,7 @@ boolean WiFiManager::process(){
         #ifdef WM_DEBUG_LEVEL
         DEBUG_WM(DEBUG_DEV,F("process loop abort"));
         #endif
+        webPortalActive = false;
         shutdownConfigPortal();
         return false;
       }
@@ -2216,7 +2235,7 @@ String WiFiManager::getInfoData(String id){
   }
   else if(id==F("aboutdate")){
     p = FPSTR(HTTP_INFO_aboutdate);
-    p.replace(FPSTR(T_1),String(__DATE__) + " " + String(__TIME__));
+    p.replace(FPSTR(T_1),String(__DATE__ " " __TIME__));
   }
   return p;
 }
@@ -3447,16 +3466,25 @@ bool WiFiManager::WiFiSetCountry(){
   if(WiFi.getMode() == WIFI_MODE_NULL){
       DEBUG_WM(DEBUG_ERROR,"[ERROR] cannot set country, wifi not init");        
   } // exception if wifi not init!
-  else if(_wificountry == "US") err = esp_wifi_set_country(&WM_COUNTRY_US);
-  else if(_wificountry == "JP") err = esp_wifi_set_country(&WM_COUNTRY_JP);
-  else if(_wificountry == "CN") err = esp_wifi_set_country(&WM_COUNTRY_CN);
+  // Assumes that _wificountry is set to one of the supported country codes : "01"(world safe mode) "AT","AU","BE","BG","BR",
+  //               "CA","CH","CN","CY","CZ","DE","DK","EE","ES","FI","FR","GB","GR","HK","HR","HU",
+  //               "IE","IN","IS","IT","JP","KR","LI","LT","LU","LV","MT","MX","NL","NO","NZ","PL","PT",
+  //               "RO","SE","SI","SK","TW","US"
+  // If an invalid country code is passed, ESP_ERR_WIFI_ARG will be returned
+  // This also uses 802.11d mode, which matches the STA to the country code of the AP it connects to (meaning
+  // that the country code will be overridden if connecting to a "foreign" AP)
+  else {
+    #ifndef WM_NOCOUNTRY
+    err = esp_wifi_set_country_code(_wificountry.c_str(), true);
+    #else
+    DEBUG_WM(DEBUG_ERROR,"[ERROR] esp wifi set country is not available");
+    err = true;
+    #endif
+  }
   #ifdef WM_DEBUG_LEVEL
-    else{
-      DEBUG_WM(DEBUG_ERROR,"[ERROR] country code not found");
-    }
     if(err){
       if(err == ESP_ERR_WIFI_NOT_INIT) DEBUG_WM(DEBUG_ERROR,"[ERROR] ESP_ERR_WIFI_NOT_INIT");
-      else if(err == ESP_ERR_INVALID_ARG) DEBUG_WM(DEBUG_ERROR,"[ERROR] ESP_ERR_WIFI_ARG");
+      else if(err == ESP_ERR_INVALID_ARG) DEBUG_WM(DEBUG_ERROR,"[ERROR] ESP_ERR_WIFI_ARG (invalid country code)");
       else if(err != ESP_OK)DEBUG_WM(DEBUG_ERROR,"[ERROR] unknown error",(String)err);
     }
   #endif
@@ -3588,7 +3616,7 @@ bool WiFiManager::WiFi_eraseConfig() {
       bool ret;
       WiFi.mode(WIFI_AP_STA); // cannot erase if not in STA mode !
       WiFi.persistent(true);
-      ret = WiFi.disconnect(true,true);
+      ret = WiFi.disconnect(true,true); // disconnect(bool wifioff, bool eraseap)
       delay(500);
       WiFi.persistent(false);
       return ret;

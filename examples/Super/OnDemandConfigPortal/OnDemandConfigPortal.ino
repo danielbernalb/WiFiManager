@@ -95,7 +95,6 @@ void setup() {
   // Serial1.begin(115200);
 
   // Serial.setDebugOutput(true);  
-  delay(1000);
 
   Serial.println("\n Starting");
   // WiFi.setSleepMode(WIFI_NONE_SLEEP); // disable sleep, can improve ap stability
@@ -106,6 +105,8 @@ void setup() {
   Serial.println("[ERROR]  TEST");
   Serial.println("[INFORMATION] TEST");  
 
+
+  wm.setDebugOutput(true);
   wm.debugPlatformInfo();
 
   //reset settings - for testing
@@ -218,7 +219,7 @@ void setup() {
   // setting wifi country seems to improve OSX soft ap connectivity, 
   // may help others as well, default is CN which has different channels
 
-  // wm.setCountry("US"); // crashing on esp32 2.0
+  wm.setCountry("US"); // crashing on esp32 2.0
 
   // set Hostname
 
@@ -308,6 +309,7 @@ void setup() {
 }
 
 void wifiInfo(){
+  // can contain gargbage on esp32 if wifi is not ready yet
   Serial.println("[WIFI] WIFI INFO DEBUG");
   // WiFi.printDiag(Serial);
   Serial.println("[WIFI] SAVED: " + (String)(wm.getWiFiIsSaved() ? "YES" : "NO"));
