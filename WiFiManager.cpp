@@ -834,6 +834,7 @@ uint8_t WiFiManager::processConfigPortal(){
       _configPortalTimeout = 4000;   // New Config Portal Timeout
       _saveTimeout = 1000;
       #ifdef WM_DEBUG_LEVEL
+      DEBUG_WM(DEBUG_VERBOSE,F("<- Timeout RESET: 5 seconds"));
       DEBUG_WM(DEBUG_VERBOSE,F("processing save"));
       #endif
       if(_enableCaptivePortal) delay(_cpclosedelay); // keeps the captiveportal from closing to fast.
