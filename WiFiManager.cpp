@@ -831,8 +831,7 @@ uint8_t WiFiManager::processConfigPortal(){
     // Waiting for save...
     if(connect) {
       connect = false;
-      _configPortalTimeout = 9000;   // New Config Portal Timeout
-      DEBUG_WM(DEBUG_VERBOSE,F("<- New Config Portal Timeout: 10 seconds"));
+      _configPortalTimeout = 4000;   // New Config Portal Timeout
       _saveTimeout = 1000;
       #ifdef WM_DEBUG_LEVEL
       DEBUG_WM(DEBUG_VERBOSE,F("processing save"));
