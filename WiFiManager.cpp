@@ -1348,7 +1348,7 @@ void WiFiManager::handleWifi(boolean scan) {
   page += pitem;
 
   page += getStaticOut();
-  //page += FPSTR(HTTP_FORM_WIFI_END);
+  page += FPSTR(HTTP_FORM_WIFI_END);
   if(_paramsInWifi && _paramsCount>0){
     page += FPSTR(HTTP_FORM_PARAM_HEAD);
     page += getParamOut();
