@@ -29,9 +29,9 @@ const char HTTP_HEAD_START[]       PROGMEM = "<!DOCTYPE html>"
 const char HTTP_SCRIPT[]           PROGMEM = "<script>function c(l){"
 "document.getElementById('s').value=l.getAttribute('data-ssid')||l.innerText||l.textContent;"
 "p = l.nextElementSibling.classList.contains('l');"
-"document.getElementById('pwpa2').disabled = !pwpa2;"
-"if(pwpa2)document.getElementById('pwpa2').focus();};"
-"function f() {var x = document.getElementById('pwpa2');x.type==='password'?x.type='text':x.type='password';}"
+"document.getElementById('p').disabled = !p;"
+"if(p)document.getElementById('p').focus();};"
+"function f() {var x = document.getElementById('p');x.type==='password'?x.type='text':x.type='password';}"
 "</script>"; // @todo add button states, disable on click , show ack , spinner etc
 
 const char HTTP_HEAD_END[]         PROGMEM = "</head><body class='{c}'><div class='wrap'>"; // {c} = _bodyclass
