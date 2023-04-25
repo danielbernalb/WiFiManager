@@ -831,10 +831,10 @@ uint8_t WiFiManager::processConfigPortal(){
     // Waiting for save...
     if(connect) {
       connect = false;
-      _configPortalTimeout = 30000;   // New Config Portal Timeout
-      _saveTimeout = 25000;
+      _configPortalTimeout = 5000;   // New Config Portal Timeout
+      _saveTimeout = 1000;
       #ifdef WM_DEBUG_LEVEL
-      DEBUG_WM(DEBUG_VERBOSE,F("<- Timeout connect to wifi: 25 seconds"));
+      DEBUG_WM(DEBUG_VERBOSE,F("<- Timeout connect to wifi: 5 seconds"));
       DEBUG_WM(DEBUG_VERBOSE,F("processing save"));
       #endif
       if(_enableCaptivePortal) delay(_cpclosedelay); // keeps the captiveportal from closing to fast.
