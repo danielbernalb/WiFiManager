@@ -875,7 +875,6 @@ uint8_t WiFiManager::processConfigPortal(){
       connect = false;
       _configPortalTimeout = 5000;   // New Config Portal Timeout
       _saveTimeout = 1000;
-      #ifdef WM_DEBUG_LEVEL
       DEBUG_WM(DEBUG_VERBOSE,F("<- Timeout RESET: 5 seconds"));
       #ifdef WM_DEBUG_LEVEL
       DEBUG_WM(DEBUG_VERBOSE,F("processing save"));
