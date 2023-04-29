@@ -873,6 +873,10 @@ uint8_t WiFiManager::processConfigPortal(){
     // Waiting for save...
     if(connect) {
       connect = false;
+      _configPortalTimeout = 5000;   // New Config Portal Timeout
+      _saveTimeout = 1000;
+      #ifdef WM_DEBUG_LEVEL
+      DEBUG_WM(DEBUG_VERBOSE,F("<- Timeout RESET: 5 seconds"));
       #ifdef WM_DEBUG_LEVEL
       DEBUG_WM(DEBUG_VERBOSE,F("processing save"));
       #endif
@@ -1329,6 +1333,8 @@ void WiFiManager::handleRoot() {
   #ifdef WM_DEBUG_LEVEL
   DEBUG_WM(DEBUG_VERBOSE,F("<- HTTP Root"));
   #endif
+  _configPortalTimeout = 300000;   // New Config Portal Timeout
+  DEBUG_WM(DEBUG_VERBOSE,F("<- New Config Portal Timeout: 300 seconds"));
   if (captivePortal()) return; // If captive portal redirect instead of displaying the page
   handleRequest();
   String page = getHTTPHead(_title); // @token options @todo replace options with title
