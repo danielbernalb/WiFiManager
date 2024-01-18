@@ -778,7 +778,7 @@ class WiFiManager
     
     // Set default debug level
     #ifndef WM_DEBUG_LEVEL
-    #define WM_DEBUG_LEVEL DEBUG_VERBOSE
+    #define WM_DEBUG_LEVEL DEBUG_NOTIFY
     #endif
 
     // override debug level OFF
